@@ -50,13 +50,13 @@ export class Transaction extends Transform {
     return this;
   }
 
-  setMeta(key: string, value: unknown): this {
-    this._meta.set(key, value);
+  setMeta(key: string | { toString(): string }, value: unknown): this {
+    this._meta.set(String(key), value);
     return this;
   }
 
-  getMeta(key: string): unknown {
-    return this._meta.get(key);
+  getMeta(key: string | { toString(): string }): unknown {
+    return this._meta.get(String(key));
   }
 
   scrollIntoView(): this {

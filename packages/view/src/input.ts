@@ -1,6 +1,6 @@
 import type { EditorView } from './editor-view';
-import { TextSelection } from '@flash/state';
-import { Slice, Fragment } from '@flash/model';
+import { TextSelection, AllSelection } from '@flash/state';
+import type { Slice } from '@flash/model';
 
 type KeyBinding = (view: EditorView) => boolean;
 
@@ -456,7 +456,6 @@ export class InputHandler {
     });
 
     this.registerKeyBinding('Mod-a', (view) => {
-      const { AllSelection } = require('@flash/state') as typeof import('@flash/state');
       const tr = view.state.tr;
       tr.setSelection(new AllSelection(tr.doc));
       view.dispatch(tr);
