@@ -1,5 +1,5 @@
-import type { Node, Mark, Slice, MarkType } from '@flash/model';
-import { Fragment } from '@flash/model';
+import type { Node, Slice, MarkType } from '@flash/model';
+import { Fragment, Mark } from '@flash/model';
 import { Slice as SliceCls } from '@flash/model';
 import { Step, ReplaceStep, AddMarkStep, RemoveMarkStep } from './step';
 import type { StepResult } from './step';

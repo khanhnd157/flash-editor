@@ -109,6 +109,7 @@ export class Schema {
 export class NodeType {
   contentMatch!: ContentMatch;
   readonly isBlock: boolean;
+  readonly isTextblock: boolean;
   readonly isInline: boolean;
   readonly isText: boolean;
   readonly isLeaf: boolean;
@@ -125,6 +126,7 @@ export class NodeType {
     this.isBlock = !this.isInline;
     this.isText = name === 'text';
     this.isLeaf = !spec.content;
+    this.isTextblock = this.isBlock && !!spec.content && /inline/.test(spec.content);
     this.isAtom = !!spec.atom || this.isLeaf;
     this.groups = spec.group ? spec.group.split(' ') : [];
   }

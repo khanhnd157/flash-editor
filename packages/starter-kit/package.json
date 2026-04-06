@@ -1,0 +1,46 @@
+{
+  "name": "@flash/starter-kit",
+  "version": "0.1.0",
+  "description": "Flash Editor starter kit — bundles common extensions",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs -w",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@flash/core": "workspace:*",
+    "@flash/commands": "workspace:*",
+    "@flash/extension-document": "workspace:*",
+    "@flash/extension-text": "workspace:*",
+    "@flash/extension-paragraph": "workspace:*",
+    "@flash/extension-heading": "workspace:*",
+    "@flash/extension-bold": "workspace:*",
+    "@flash/extension-italic": "workspace:*",
+    "@flash/extension-strike": "workspace:*",
+    "@flash/extension-underline": "workspace:*",
+    "@flash/extension-code": "workspace:*",
+    "@flash/extension-link": "workspace:*",
+    "@flash/extension-blockquote": "workspace:*",
+    "@flash/extension-code-block": "workspace:*",
+    "@flash/extension-bullet-list": "workspace:*",
+    "@flash/extension-ordered-list": "workspace:*",
+    "@flash/extension-list-item": "workspace:*",
+    "@flash/extension-horizontal-rule": "workspace:*",
+    "@flash/extension-hard-break": "workspace:*",
+    "@flash/extension-highlight": "workspace:*",
+    "@flash/extension-image": "workspace:*"
+  },
+  "sideEffects": false
+}

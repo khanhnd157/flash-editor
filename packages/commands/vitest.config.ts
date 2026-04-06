@@ -10,7 +10,6 @@ export default defineConfig({
       '@flash/model': path.resolve(__dirname, '../model/src/index.ts'),
       '@flash/transform': path.resolve(__dirname, '../transform/src/index.ts'),
       '@flash/state': path.resolve(__dirname, '../state/src/index.ts'),
-      '@flash/core': path.resolve(__dirname, './src/index.ts'),
     },
   },
 });

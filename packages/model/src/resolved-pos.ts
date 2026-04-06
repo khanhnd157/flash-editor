@@ -1,4 +1,5 @@
 import type { Node } from './node';
+import { Mark } from './mark';
 
 export class ResolvedPos {
   readonly depth: number;
@@ -91,6 +92,18 @@ export class ResolvedPos {
       if (this.start(depth) <= pos && this.end(depth) >= pos) return depth;
     }
     return 0;
+  }
+
+  marks(): readonly Mark[] {
+    const parent = this.parent;
+    const index = this.index(this.depth);
+    if (parent.childCount === 0) return Mark.none;
+    if (this.textOffset > 0) return parent.child(index).marks;
+    const child = index < parent.childCount ? parent.child(index) : null;
+    const before = index > 0 ? parent.child(index - 1) : null;
+    if (before?.isInline) return before.marks;
+    if (child?.isInline) return child.marks;
+    return Mark.none;
   }
 
   private resolveDepth(depth?: number): number {

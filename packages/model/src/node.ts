@@ -33,6 +33,10 @@ export class Node {
     return this.type.isBlock;
   }
 
+  get isTextblock(): boolean {
+    return this.type.isTextblock;
+  }
+
   get isInline(): boolean {
     return this.type.isInline;
   }
@@ -128,6 +132,15 @@ export class Node {
       });
     }
     return found;
+  }
+
+  canReplaceWith(from: number, to: number, type: import('./schema').NodeType): boolean {
+    const match = this.type.contentMatch.matchFragment(this.content, 0, from);
+    if (!match) return false;
+    const m = match.matchType(type);
+    if (!m) return false;
+    const rest = m.matchFragment(this.content, to);
+    return rest !== null && rest.validEnd;
   }
 
   withText(_text: string): Node {
