@@ -1,0 +1,12 @@
+{
+  "name": "@flash/extension-text-direction",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@flash/core": "workspace:*",
+    "@flash/state": "workspace:*",
+    "@flash/i18n": "workspace:*"
+  }
+}

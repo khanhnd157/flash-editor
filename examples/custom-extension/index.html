@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Custom Extension</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px; }
+    h1 { max-width: 800px; margin: 0 auto 8px; font-size: 24px; }
+    .subtitle { max-width: 800px; margin: 0 auto 24px; color: #666; font-size: 14px; }
+
+    .editor-container { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+    .flash-editor { padding: 16px 24px; min-height: 300px; outline: none; font-size: 16px; line-height: 1.7; color: #333; }
+    .flash-editor p { margin-bottom: 8px; }
+    .flash-editor h1, .flash-editor h2, .flash-editor h3 { margin: 16px 0 8px; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+
+    /* Custom extension styles */
+    .flash-editor .callout {
+      border: 1px solid;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .flash-editor .callout[data-type="info"]    { background: #eff6ff; border-color: #bfdbfe; }
+    .flash-editor .callout[data-type="warning"] { background: #fefce8; border-color: #fde68a; }
+    .flash-editor .callout[data-type="error"]   { background: #fef2f2; border-color: #fecaca; }
+    .flash-editor .callout[data-type="success"] { background: #f0fdf4; border-color: #bbf7d0; }
+    .flash-editor .callout-icon { font-size: 20px; flex-shrink: 0; padding-top: 2px; }
+    .flash-editor .callout-content { flex: 1; }
+
+    .flash-editor .emoji-inline {
+      font-size: 1.2em;
+      cursor: default;
+    }
+
+    .code-block { max-width: 800px; margin: 24px auto; }
+    .code-block h3 { margin-bottom: 8px; color: #333; font-size: 16px; }
+    .code-block pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-size: 13px; overflow-x: auto; line-height: 1.5; }
+    .code-block .keyword { color: #c586c0; }
+    .code-block .string { color: #ce9178; }
+    .code-block .func { color: #dcdcaa; }
+    .code-block .comment { color: #6a9955; }
+    .code-block .type { color: #4ec9b0; }
+  </style>
+</head>
+<body>
+  <h1>⚡ Flash Editor — Custom Extensions</h1>
+  <p class="subtitle">Extending the editor with a custom "Callout" block node and an "Emoji" inline node.</p>
+
+  <div class="editor-container">
+    <div id="editor"></div>
+  </div>
+
+  <div class="code-block">
+    <h3>📄 Callout Extension (NodeExtension)</h3>
+    <pre><code><span class="comment">// Create a custom block extension</span>
+<span class="keyword">import</span> { <span class="type">NodeExtension</span> } <span class="keyword">from</span> <span class="string">'@flash/core'</span>;
+
+<span class="keyword">const</span> Callout = <span class="type">NodeExtension</span>.<span class="func">create</span>({
+  <span class="func">name</span>: <span class="string">'callout'</span>,
+
+  <span class="func">addOptions</span>: () =&gt; ({
+    types: [<span class="string">'info'</span>, <span class="string">'warning'</span>, <span class="string">'error'</span>, <span class="string">'success'</span>],
+  }),
+
+  <span class="func">nodeSpec</span>: () =&gt; ({
+    group: <span class="string">'block'</span>,
+    content: <span class="string">'block+'</span>,
+    attrs: { type: { default: <span class="string">'info'</span> } },
+    toDOM(node) {
+      <span class="keyword">const</span> icons = { info: <span class="string">'ℹ️'</span>, warning: <span class="string">'⚠️'</span>, error: <span class="string">'❌'</span>, success: <span class="string">'✅'</span> };
+      <span class="keyword">return</span> [<span class="string">'div'</span>, { class: <span class="string">'callout'</span>, <span class="string">'data-type'</span>: node.attrs.type },
+        [<span class="string">'span'</span>, { class: <span class="string">'callout-icon'</span> }, icons[node.attrs.type]],
+        [<span class="string">'div'</span>, { class: <span class="string">'callout-content'</span> }, 0],
+      ];
+    },
+    parseDOM: [{ tag: <span class="string">'div.callout'</span>, getAttrs(dom) {
+      <span class="keyword">return</span> { type: dom.getAttribute(<span class="string">'data-type'</span>) || <span class="string">'info'</span> };
+    }}],
+  }),
+
+  <span class="func">addCommands</span>: () =&gt; ({
+    <span class="func">insertCallout</span>: (attrs) =&gt; (state, dispatch) =&gt; {
+      <span class="comment">// Insert a callout with a paragraph inside</span>
+      <span class="keyword">const</span> calloutType = state.schema.nodes.callout;
+      <span class="keyword">const</span> paragraph = state.schema.nodes.paragraph.create();
+      <span class="keyword">const</span> node = calloutType.create(attrs, paragraph);
+      <span class="keyword">const</span> tr = state.tr.replaceSelectionWith(node);
+      dispatch?.(tr);
+      <span class="keyword">return true</span>;
+    },
+    <span class="func">setCalloutType</span>: (type) =&gt; (state, dispatch) =&gt; {
+      <span class="comment">// Change callout variant at cursor</span>
+      <span class="keyword">const</span> { $from } = state.selection;
+      <span class="comment">// Walk up to find callout node</span>
+      <span class="keyword">for</span> (<span class="keyword">let</span> d = $from.depth; d &gt; 0; d--) {
+        <span class="keyword">if</span> ($from.node(d).type.name === <span class="string">'callout'</span>) {
+          <span class="keyword">const</span> pos = $from.before(d);
+          dispatch?.(state.tr.setNodeMarkup(pos, <span class="keyword">undefined</span>, { type }));
+          <span class="keyword">return true</span>;
+        }
+      }
+      <span class="keyword">return false</span>;
+    },
+  }),
+
+  <span class="func">addKeyboardShortcuts</span>: () =&gt; ({
+    <span class="string">'Mod-Shift-c'</span>: (state, dispatch) =&gt; {
+      <span class="comment">// Quick insert info callout</span>
+      <span class="keyword">const</span> callout = state.schema.nodes.callout;
+      <span class="keyword">const</span> para = state.schema.nodes.paragraph.create();
+      dispatch?.(state.tr.replaceSelectionWith(callout.create({ type: <span class="string">'info'</span> }, para)));
+      <span class="keyword">return true</span>;
+    },
+  }),
+});</code></pre>
+  </div>
+
+  <div class="code-block">
+    <h3>📄 Emoji Extension (Inline NodeExtension)</h3>
+    <pre><code><span class="keyword">const</span> Emoji = <span class="type">NodeExtension</span>.<span class="func">create</span>({
+  <span class="func">name</span>: <span class="string">'emoji'</span>,
+
+  <span class="func">nodeSpec</span>: () =&gt; ({
+    group: <span class="string">'inline'</span>,
+    inline: <span class="keyword">true</span>,
+    atom: <span class="keyword">true</span>,          <span class="comment">// Treated as a single unit, not editable inside</span>
+    attrs: { code: {} },   <span class="comment">// e.g. "rocket", "fire"</span>
+    toDOM(node) {
+      <span class="keyword">const</span> map = { rocket: <span class="string">'🚀'</span>, fire: <span class="string">'🔥'</span>, heart: <span class="string">'❤️'</span>, star: <span class="string">'⭐'</span>, check: <span class="string">'✅'</span> };
+      <span class="keyword">return</span> [<span class="string">'span'</span>, { class: <span class="string">'emoji-inline'</span>, <span class="string">'data-emoji'</span>: node.attrs.code },
+        map[node.attrs.code] || <span class="string">'❓'</span>];
+    },
+    parseDOM: [{ tag: <span class="string">'span.emoji-inline'</span>, getAttrs(dom) {
+      <span class="keyword">return</span> { code: dom.getAttribute(<span class="string">'data-emoji'</span>) };
+    }}],
+  }),
+
+  <span class="func">addCommands</span>: () =&gt; ({
+    <span class="func">insertEmoji</span>: (code) =&gt; (state, dispatch) =&gt; {
+      <span class="keyword">const</span> emojiNode = state.schema.nodes.emoji.create({ code });
+      dispatch?.(state.tr.replaceSelectionWith(emojiNode));
+      <span class="keyword">return true</span>;
+    },
+  }),
+});</code></pre>
+  </div>
+
+  <script type="module">
+    import { Editor, NodeExtension } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+
+    // ── Custom Callout Extension ──
+    const Callout = NodeExtension.create({
+      name: 'callout',
+      addOptions: () => ({ types: ['info', 'warning', 'error', 'success'] }),
+      nodeSpec: () => ({
+        group: 'block',
+        content: 'block+',
+        attrs: { type: { default: 'info' } },
+        toDOM(node) {
+          const icons = { info: 'ℹ️', warning: '⚠️', error: '❌', success: '✅' };
+          return ['div', { class: 'callout', 'data-type': node.attrs.type },
+            ['span', { class: 'callout-icon' }, icons[node.attrs.type] || 'ℹ️'],
+            ['div', { class: 'callout-content' }, 0],
+          ];
+        },
+        parseDOM: [{ tag: 'div.callout', getAttrs: (dom) => ({ type: dom.getAttribute('data-type') || 'info' }) }],
+      }),
+      addCommands: () => ({
+        insertCallout: (attrs) => (state, dispatch) => {
+          const calloutType = state.schema.nodes.callout;
+          const para = state.schema.nodes.paragraph.create();
+          const node = calloutType.create(attrs, para);
+          dispatch?.(state.tr.replaceSelectionWith(node));
+          return true;
+        },
+        setCalloutType: (type) => (state, dispatch) => {
+          const { $from } = state.selection;
+          for (let d = $from.depth; d > 0; d--) {
+            if ($from.node(d).type.name === 'callout') {
+              dispatch?.(state.tr.setNodeMarkup($from.before(d), undefined, { type }));
+              return true;
+            }
+          }
+          return false;
+        },
+      }),
+    });
+
+    // ── Custom Emoji Extension (inline atom) ──
+    const Emoji = NodeExtension.create({
+      name: 'emoji',
+      nodeSpec: () => ({
+        group: 'inline',
+        inline: true,
+        atom: true,
+        attrs: { code: {} },
+        toDOM(node) {
+          const map = { rocket: '🚀', fire: '🔥', heart: '❤️', star: '⭐', check: '✅' };
+          return ['span', { class: 'emoji-inline', 'data-emoji': node.attrs.code }, map[node.attrs.code] || '❓'];
+        },
+        parseDOM: [{ tag: 'span.emoji-inline', getAttrs: (dom) => ({ code: dom.getAttribute('data-emoji') }) }],
+      }),
+      addCommands: () => ({
+        insertEmoji: (code) => (state, dispatch) => {
+          const emojiNode = state.schema.nodes.emoji.create({ code });
+          dispatch?.(state.tr.replaceSelectionWith(emojiNode));
+          return true;
+        },
+      }),
+    });
+
+    // ── Initialize Editor ──
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: [
+        ...StarterKit(),
+        Callout,
+        Emoji,
+      ],
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Custom Extensions Demo' }] },
+          { type: 'callout', attrs: { type: 'info' }, content: [
+            { type: 'paragraph', content: [
+              { type: 'text', marks: [{ type: 'bold' }], text: 'Info: ' },
+              { type: 'text', text: 'This is a custom callout node. It supports rich content inside!' },
+            ]},
+          ]},
+          { type: 'callout', attrs: { type: 'warning' }, content: [
+            { type: 'paragraph', content: [
+              { type: 'text', marks: [{ type: 'bold' }], text: 'Warning: ' },
+              { type: 'text', text: 'Callouts can be info, warning, error, or success variants.' },
+            ]},
+          ]},
+          { type: 'callout', attrs: { type: 'success' }, content: [
+            { type: 'paragraph', content: [
+              { type: 'text', text: 'Extensions are easy to build! Just define a nodeSpec and commands. ' },
+              { type: 'emoji', attrs: { code: 'rocket' } },
+              { type: 'emoji', attrs: { code: 'fire' } },
+            ]},
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Inline emojis work anywhere in text: ' },
+            { type: 'emoji', attrs: { code: 'star' } },
+            { type: 'text', text: ' ' },
+            { type: 'emoji', attrs: { code: 'heart' } },
+            { type: 'text', text: ' — they are atom nodes, not raw unicode.' },
+          ]},
+        ],
+      },
+    });
+
+    // Expose to console for testing
+    window.editor = editor;
+    console.log('Try: editor.command("insertCallout", { type: "error" })');
+    console.log('Try: editor.command("insertEmoji", "rocket")');
+  </script>
+</body>
+</html>

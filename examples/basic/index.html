@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Basic Example</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px; }
+    h1 { margin-bottom: 16px; font-size: 24px; color: #333; }
+    .editor-wrapper { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+    .flash-editor { padding: 16px 24px; min-height: 300px; outline: none; font-size: 16px; line-height: 1.6; color: #333; }
+    .flash-editor p { margin-bottom: 8px; }
+    .flash-editor h1, .flash-editor h2, .flash-editor h3 { margin: 16px 0 8px; }
+    .flash-editor blockquote { border-left: 3px solid #ddd; padding-left: 16px; color: #666; }
+    .flash-editor code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 14px; }
+    .flash-editor pre { background: #f8f8f8; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    .flash-editor hr { border: none; border-top: 2px solid #eee; margin: 16px 0; }
+    .flash-editor strong { font-weight: 600; }
+    .flash-editor a { color: #0066cc; text-decoration: underline; }
+    .flash-editor mark { background: #fff3b0; }
+    .output { max-width: 720px; margin: 20px auto; padding: 16px; background: #1e1e1e; color: #d4d4d4; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 13px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    .output-label { max-width: 720px; margin: 20px auto 8px; font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <div style="max-width: 720px; margin: 0 auto;">
+    <h1>⚡ Flash Editor — Basic</h1>
+    <p style="margin-bottom: 16px; color: #666;">A minimal rich-text editor with StarterKit extensions.</p>
+  </div>
+  <div class="editor-wrapper">
+    <div id="editor"></div>
+  </div>
+  <p class="output-label">Document JSON (live)</p>
+  <pre class="output" id="output"></pre>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: StarterKit(),
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Welcome to Flash Editor' }] },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'This is a ' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'rich-text editor' },
+            { type: 'text', text: ' built from scratch. Try typing, selecting text, and using ' },
+            { type: 'text', marks: [{ type: 'code' }], text: 'Ctrl+B' },
+            { type: 'text', text: ' for bold.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Keyboard shortcuts: ' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'Ctrl+B' },
+            { type: 'text', text: ' bold, ' },
+            { type: 'text', marks: [{ type: 'italic' }], text: 'Ctrl+I' },
+            { type: 'text', text: ' italic, ' },
+            { type: 'text', marks: [{ type: 'code' }], text: 'Ctrl+E' },
+            { type: 'text', text: ' code' },
+          ]},
+        ],
+      },
+      onUpdate(editor) {
+        document.getElementById('output').textContent = JSON.stringify(editor.state.doc.toJSON(), null, 2);
+      },
+      onCreate(editor) {
+        document.getElementById('output').textContent = JSON.stringify(editor.state.doc.toJSON(), null, 2);
+      },
+    });
+  </script>
+</body>
+</html>

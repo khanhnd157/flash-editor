@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Toolbar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px; }
+    h1 { max-width: 800px; margin: 0 auto 16px; font-size: 24px; color: #333; }
+
+    .editor-container { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+
+    /* Toolbar */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 12px; border-bottom: 1px solid #eee; background: #fafafa; }
+    .toolbar-group { display: flex; gap: 2px; }
+    .toolbar-group + .toolbar-group { margin-left: 8px; padding-left: 8px; border-left: 1px solid #e0e0e0; }
+    .toolbar button {
+      padding: 6px 10px; border: 1px solid transparent; border-radius: 4px; background: none;
+      cursor: pointer; font-size: 14px; color: #555; transition: all 0.15s;
+    }
+    .toolbar button:hover { background: #e8e8e8; }
+    .toolbar button.active { background: #e0e7ff; color: #3b5bdb; border-color: #a5b4fc; }
+    .toolbar button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .toolbar select { padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: #fff; }
+
+    /* Editor */
+    .flash-editor { padding: 16px 24px; min-height: 400px; outline: none; font-size: 16px; line-height: 1.7; color: #333; }
+    .flash-editor p { margin-bottom: 8px; }
+    .flash-editor h1 { font-size: 28px; margin: 20px 0 8px; }
+    .flash-editor h2 { font-size: 22px; margin: 16px 0 8px; }
+    .flash-editor h3 { font-size: 18px; margin: 12px 0 8px; }
+    .flash-editor blockquote { border-left: 3px solid #c4c4c4; padding-left: 16px; color: #666; margin: 8px 0; }
+    .flash-editor code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 14px; font-family: 'Fira Code', monospace; }
+    .flash-editor pre { background: #282c34; color: #abb2bf; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
+    .flash-editor pre code { background: none; color: inherit; padding: 0; }
+    .flash-editor hr { border: none; border-top: 2px solid #eee; margin: 16px 0; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+    .flash-editor s { text-decoration: line-through; }
+    .flash-editor u { text-decoration: underline; }
+    .flash-editor a { color: #0066cc; text-decoration: underline; }
+    .flash-editor mark { background: #fff3b0; padding: 1px 2px; }
+    .flash-editor ul, .flash-editor ol { padding-left: 24px; margin: 8px 0; }
+    .flash-editor li { margin-bottom: 4px; }
+    .flash-editor img { max-width: 100%; border-radius: 4px; }
+
+    /* Status bar */
+    .status-bar { padding: 6px 12px; border-top: 1px solid #eee; background: #fafafa; font-size: 12px; color: #999; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <h1>⚡ Flash Editor — Rich Toolbar</h1>
+
+  <div class="editor-container">
+    <!-- Toolbar -->
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar-group">
+        <select id="block-type" title="Block type">
+          <option value="paragraph">Paragraph</option>
+          <option value="heading-1">Heading 1</option>
+          <option value="heading-2">Heading 2</option>
+          <option value="heading-3">Heading 3</option>
+          <option value="code-block">Code Block</option>
+        </select>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="btn-bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button id="btn-italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button id="btn-underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button id="btn-strike" title="Strikethrough (Ctrl+Shift+X)"><s>S</s></button>
+        <button id="btn-code" title="Inline Code (Ctrl+E)"><code>&lt;/&gt;</code></button>
+        <button id="btn-highlight" title="Highlight">🖍</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="btn-link" title="Insert Link">🔗</button>
+        <button id="btn-image" title="Insert Image">🖼</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="btn-bullet-list" title="Bullet List">• —</button>
+        <button id="btn-ordered-list" title="Ordered List">1. —</button>
+        <button id="btn-blockquote" title="Blockquote">❝</button>
+        <button id="btn-hr" title="Horizontal Rule">—</button>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="btn-undo" title="Undo (Ctrl+Z)">↩</button>
+        <button id="btn-redo" title="Redo (Ctrl+Y)">↪</button>
+      </div>
+    </div>
+
+    <!-- Editor element -->
+    <div id="editor"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span id="word-count">0 words</span>
+      <span id="char-count">0 characters</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+    import { history, undo, redo } from '@flash/view';
+
+    // ── Create Editor ──
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: [
+        ...StarterKit(),
+      ],
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'My Document' }] },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Start writing your content here. Use the toolbar above or keyboard shortcuts to format text.' },
+          ]},
+        ],
+      },
+      onUpdate: () => updateUI(),
+      onTransaction: () => updateUI(),
+      onCreate: () => updateUI(),
+    });
+
+    // ── Toolbar handlers ──
+
+    // Mark toggle buttons
+    const markButtons = [
+      { id: 'btn-bold',      command: 'toggleBold',      mark: 'bold' },
+      { id: 'btn-italic',    command: 'toggleItalic',    mark: 'italic' },
+      { id: 'btn-underline', command: 'toggleUnderline', mark: 'underline' },
+      { id: 'btn-strike',    command: 'toggleStrike',    mark: 'strike' },
+      { id: 'btn-code',      command: 'toggleCode',      mark: 'code' },
+      { id: 'btn-highlight', command: 'toggleHighlight',  mark: 'highlight' },
+    ];
+
+    for (const { id, command } of markButtons) {
+      document.getElementById(id).addEventListener('click', () => {
+        editor.command(command);
+        editor.focus?.();
+      });
+    }
+
+    // Link
+    document.getElementById('btn-link').addEventListener('click', () => {
+      const href = prompt('Enter URL:', 'https://');
+      if (href) {
+        editor.command('toggleLink', { href });
+      }
+    });
+
+    // Image
+    document.getElementById('btn-image').addEventListener('click', () => {
+      const src = prompt('Enter image URL:', 'https://');
+      if (src) {
+        const alt = prompt('Alt text:', '') || '';
+        editor.command('insertImage', { src, alt });
+      }
+    });
+
+    // Block type selector
+    document.getElementById('block-type').addEventListener('change', (e) => {
+      const value = e.target.value;
+      switch (value) {
+        case 'paragraph':
+          editor.command('setParagraph');
+          break;
+        case 'heading-1':
+          editor.command('setHeading', { level: 1 });
+          break;
+        case 'heading-2':
+          editor.command('setHeading', { level: 2 });
+          break;
+        case 'heading-3':
+          editor.command('setHeading', { level: 3 });
+          break;
+        case 'code-block':
+          editor.command('setCodeBlock');
+          break;
+      }
+    });
+
+    // Lists & block formatting
+    document.getElementById('btn-blockquote').addEventListener('click', () => editor.command('wrapInBlockquote'));
+    document.getElementById('btn-bullet-list').addEventListener('click', () => editor.command('wrapInBulletList'));
+    document.getElementById('btn-ordered-list').addEventListener('click', () => editor.command('wrapInOrderedList'));
+    document.getElementById('btn-hr').addEventListener('click', () => editor.command('insertHorizontalRule'));
+
+    // Undo / Redo
+    document.getElementById('btn-undo').addEventListener('click', () => editor.command('undo'));
+    document.getElementById('btn-redo').addEventListener('click', () => editor.command('redo'));
+
+    // ── Update toolbar state ──
+    function updateUI() {
+      const state = editor.state;
+
+      // Active marks
+      for (const { id, mark } of markButtons) {
+        const btn = document.getElementById(id);
+        const isActive = editor.command('isMarkActive', mark);
+        btn.classList.toggle('active', Boolean(isActive));
+      }
+
+      // Word & character count
+      const text = state.doc.textContent || '';
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      document.getElementById('word-count').textContent = `${words} word${words !== 1 ? 's' : ''}`;
+      document.getElementById('char-count').textContent = `${text.length} character${text.length !== 1 ? 's' : ''}`;
+    }
+  </script>
+</body>
+</html>

@@ -152,3 +152,81 @@ describe('Editor', () => {
     editor.destroy();
   });
 });
+
+describe('Editor i18n', () => {
+  it('translates keys with default en locale', () => {
+    const editor = new Editor({
+      i18n: {
+        locale: 'en',
+        messages: { en: { bold: 'Bold', italic: 'Italic' } },
+      },
+    });
+    expect(editor.t('bold')).toBe('Bold');
+    expect(editor.locale).toBe('en');
+    editor.destroy();
+  });
+
+  it('returns key when no messages provided', () => {
+    const editor = new Editor();
+    expect(editor.t('bold')).toBe('bold');
+    editor.destroy();
+  });
+
+  it('switches locale at runtime', () => {
+    const editor = new Editor({
+      i18n: {
+        locale: 'en',
+        messages: {
+          en: { bold: 'Bold' },
+          vi: { bold: 'Đậm' },
+        },
+      },
+    });
+    expect(editor.t('bold')).toBe('Bold');
+
+    editor.setLocale('vi');
+    expect(editor.locale).toBe('vi');
+    expect(editor.t('bold')).toBe('Đậm');
+    editor.destroy();
+  });
+
+  it('falls back to en when key missing in active locale', () => {
+    const editor = new Editor({
+      i18n: {
+        locale: 'vi',
+        fallbackLocale: 'en',
+        messages: {
+          en: { bold: 'Bold', italic: 'Italic' },
+          vi: { bold: 'Đậm' },
+        },
+      },
+    });
+    expect(editor.t('bold')).toBe('Đậm');
+    expect(editor.t('italic')).toBe('Italic'); // fallback
+    editor.destroy();
+  });
+
+  it('interpolates params in translation', () => {
+    const editor = new Editor({
+      i18n: {
+        locale: 'en',
+        messages: { en: { 'heading.level': 'Heading {level}' } },
+      },
+    });
+    expect(editor.t('heading.level', { level: 3 })).toBe('Heading 3');
+    editor.destroy();
+  });
+
+  it('mergeMessages adds translations at runtime', () => {
+    const editor = new Editor({
+      i18n: {
+        locale: 'en',
+        messages: { en: { bold: 'Bold' } },
+      },
+    });
+    editor.mergeMessages('fr', { bold: 'Gras' });
+    editor.setLocale('fr');
+    expect(editor.t('bold')).toBe('Gras');
+    editor.destroy();
+  });
+});

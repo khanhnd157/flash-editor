@@ -53,6 +53,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@flash/model':
         specifier: workspace:*
         version: link:../model
@@ -219,6 +222,18 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/extensions/text-direction:
+    dependencies:
+      '@flash/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../../i18n
+      '@flash/state':
+        specifier: workspace:*
+        version: link:../../state
+
   packages/extensions/underline:
     dependencies:
       '@flash/commands':
@@ -227,6 +242,38 @@ importers:
       '@flash/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/i18n: {}
+
+  packages/locale-ar:
+    dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+
+  packages/locale-ja:
+    dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+
+  packages/locale-ko:
+    dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+
+  packages/locale-vi:
+    dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+
+  packages/locale-zh:
+    dependencies:
+      '@flash/i18n':
+        specifier: workspace:*
+        version: link:../i18n
 
   packages/model: {}
 

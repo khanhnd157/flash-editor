@@ -5,12 +5,19 @@ import type { Transaction, EditorStateCreateConfig } from '@flash/state';
 import { Extension, NodeExtension, MarkExtension } from './extension';
 import type { Command } from './extension';
 
+export interface EditorI18nConfig {
+  locale?: string;
+  fallbackLocale?: string;
+  messages?: Record<string, Record<string, string>>;
+}
+
 export interface EditorConfig {
   element?: HTMLElement;
   extensions?: Extension[];
   content?: string | Record<string, unknown>;
   autofocus?: boolean;
   editable?: boolean;
+  i18n?: EditorI18nConfig;
   onUpdate?: (editor: Editor) => void;
   onTransaction?: (props: { editor: Editor; transaction: Transaction }) => void;
   onCreate?: (editor: Editor) => void;
@@ -25,10 +32,23 @@ export class Editor {
   private _keymap: Map<string, Command> = new Map();
   private _config: EditorConfig;
   private _destroyed = false;
+  private _locale: string;
+  private _fallbackLocale: string;
+  private _messages: Record<string, Record<string, string>>;
 
   constructor(config: EditorConfig = {}) {
     this._config = config;
     this._extensions = this.sortExtensions(config.extensions ?? []);
+
+    // i18n setup
+    this._locale = config.i18n?.locale ?? 'en';
+    this._fallbackLocale = config.i18n?.fallbackLocale ?? 'en';
+    this._messages = {};
+    if (config.i18n?.messages) {
+      for (const [loc, msgs] of Object.entries(config.i18n.messages)) {
+        this._messages[loc] = { ...msgs };
+      }
+    }
 
     // Build schema from extensions
     this.schema = this.buildSchema();
@@ -62,6 +82,35 @@ export class Editor {
 
   get isDestroyed(): boolean {
     return this._destroyed;
+  }
+
+  get locale(): string {
+    return this._locale;
+  }
+
+  /** Translate a key with optional interpolation params */
+  t(key: string, params?: Record<string, string | number>): string {
+    let value = this._messages[this._locale]?.[key]
+      ?? this._messages[this._fallbackLocale]?.[key]
+      ?? key;
+
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        value = value.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+      }
+    }
+    return value;
+  }
+
+  setLocale(locale: string): void {
+    this._locale = locale;
+  }
+
+  mergeMessages(locale: string, messages: Record<string, string>): void {
+    if (!this._messages[locale]) {
+      this._messages[locale] = {};
+    }
+    Object.assign(this._messages[locale], messages);
   }
 
   dispatch(tr: Transaction): void {
