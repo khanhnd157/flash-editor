@@ -1,0 +1,25 @@
+{
+  "name": "@flash/playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Flash Editor interactive playground",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@flash/core": "workspace:*",
+    "@flash/starter-kit": "workspace:*",
+    "@flash/ui": "workspace:*",
+    "@flash/theme-default": "workspace:*",
+    "@flash/theme-notion": "workspace:*",
+    "@flash/theme-docs": "workspace:*",
+    "@flash/templates": "workspace:*",
+    "@flash/commands": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "typescript": "^5.8.0"
+  }
+}

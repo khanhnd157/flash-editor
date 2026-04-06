@@ -224,3 +224,6 @@ export function injectDefaultTheme(): void {
   document.head.appendChild(style);
   _injected = true;
 }
+
+// High contrast variant
+export { highContrastCSS, injectHighContrastTheme } from './high-contrast';
