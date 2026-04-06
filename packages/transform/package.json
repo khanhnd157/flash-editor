@@ -1,0 +1,26 @@
+{
+  "name": "@flash/transform",
+  "version": "0.1.0",
+  "description": "Flash Editor transform system — Step, StepMap, Mapping, Transform",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs -w",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@flash/model": "workspace:*"
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,26 @@
+{
+  "name": "flash-editor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Flash — A lightweight, fast, headless rich-text editor engine",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint packages/",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0",
+    "@rollup/plugin-typescript": "^12.0.0",
+    "rollup": "^4.30.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "tslib": "^2.8.0"
+  }
+}
