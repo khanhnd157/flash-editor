@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Long Texts</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-alt: #f8f9fa; --text: #1a1a2e; --text-muted: #6c757d;
+      --accent: #4361ee; --border: #e2e8f0; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-alt); color: var(--text); padding: 32px 16px; }
+
+    .editor-wrap { max-width: 860px; margin: 0 auto; }
+    .editor-wrap > h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .editor-wrap > p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+    .stats-bar {
+      display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 20px; min-width: 140px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .stat .value { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .stat .label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .editor-container {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+    }
+
+    .flash-editor {
+      padding: 24px 32px; min-height: 500px; max-height: 700px; overflow-y: auto; outline: none;
+      font-size: 16px; line-height: 1.75; color: var(--text);
+    }
+    .flash-editor p { margin-bottom: 0.75em; }
+    .flash-editor h1 { font-size: 2em; font-weight: 700; margin: 1em 0 0.4em; }
+    .flash-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; }
+    .flash-editor h3 { font-size: 1.2em; font-weight: 600; margin: 0.6em 0 0.3em; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+    .flash-editor blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: 0.75em 0; color: var(--text-muted); font-style: italic; }
+    .flash-editor ul, .flash-editor ol { padding-left: 28px; margin: 0.5em 0; }
+    .flash-editor li { margin-bottom: 4px; }
+    .flash-editor li p { margin-bottom: 2px; }
+    .flash-editor hr { border: none; border-top: 2px solid var(--border); margin: 1.5em 0; }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 8px; }
+      .flash-editor { padding: 16px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-wrap">
+    <h1>📄 Long Texts</h1>
+    <p>Stress-test the editor with large content. Stats update live as you type.</p>
+
+    <div class="stats-bar">
+      <div class="stat"><div class="value" id="stat-words">0</div><div class="label">Words</div></div>
+      <div class="stat"><div class="value" id="stat-chars">0</div><div class="label">Characters</div></div>
+      <div class="stat"><div class="value" id="stat-paragraphs">0</div><div class="label">Paragraphs</div></div>
+      <div class="stat"><div class="value" id="stat-nodes">0</div><div class="label">Nodes</div></div>
+    </div>
+
+    <div class="editor-container">
+      <div id="editor"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+
+    // Generate a large document programmatically
+    function generateLongContent() {
+      const sections = [
+        { title: 'The Art of Writing', paragraphs: [
+          'Writing is an art form that has evolved over millennia. From ancient cave paintings to modern digital text, humans have always sought ways to record and share their thoughts. The written word has the power to inspire, educate, and transform society in profound ways.',
+          'In the digital age, writing has taken on new forms and new importance. Blog posts, tweets, emails, and documents form the backbone of modern communication. The tools we use to write matter — they shape how we think and express ourselves.',
+          'Flash Editor was built with this philosophy in mind: writing tools should be fast, lightweight, and stay out of your way. The editor should enhance your creative flow, not interrupt it.',
+        ]},
+        { title: 'Performance Considerations', paragraphs: [
+          'When dealing with large documents, editor performance becomes critical. Every keystroke must feel instant. Rendering must be efficient. Memory usage must stay reasonable even with thousands of nodes in the document tree.',
+          'Flash Editor uses a virtual DOM approach for rendering, which means only the parts of the document that change are re-rendered. This makes it suitable for documents of any size, from a quick note to a full-length novel.',
+          'The editor state is immutable — each transaction creates a new state object. This makes undo/redo trivially correct and enables powerful plugin architectures without performance penalties.',
+        ]},
+        { title: 'Document Structure', paragraphs: [
+          'A well-structured document is easier to read, understand, and maintain. Use headings to organize sections, paragraphs for main content, and lists for enumerations. Blockquotes can highlight important passages.',
+          'The hierarchical nature of documents maps naturally to a tree data structure. Flash Editor represents documents as a tree of nodes, where each node can contain text, marks (formatting), and child nodes.',
+          'This tree structure enables powerful operations: you can transform entire sections, validate document structure, and serialize to various formats like HTML, Markdown, or JSON.',
+        ]},
+        { title: 'Typography and Readability', paragraphs: [
+          'Good typography makes text more readable and aesthetically pleasing. Line height, font size, paragraph spacing, and column width all contribute to the reading experience. Flash Editor provides sensible defaults while allowing complete customization.',
+          'Studies show that the optimal line length for reading is 50-75 characters. Longer lines cause eye fatigue as the reader must track back to the beginning of the next line. This is why the editor content area has a maximum width.',
+          'Contrast is equally important. The default theme uses a dark text color on a light background with careful attention to the contrast ratio. This ensures readability in various lighting conditions.',
+        ]},
+        { title: 'Extensibility', paragraphs: [
+          'Every feature in Flash Editor is an extension. The core engine provides the foundation — state management, transactions, schema validation — while extensions add specific functionality like bold text, headings, or images.',
+          'This architecture means you only ship the code you actually need. A minimal editor with just paragraph and text support weighs almost nothing. Add features incrementally as your requirements grow.',
+          'Custom extensions are straightforward to build. Define a schema (what nodes/marks your extension adds), commands (what actions users can take), and optionally keybindings and input rules. The extension system handles the rest.',
+        ]},
+        { title: 'Collaboration Patterns', paragraphs: [
+          'Real-time collaboration requires careful handling of concurrent edits. Operational Transformation (OT) and Conflict-free Replicated Data Types (CRDTs) are two popular approaches. Flash Editor\'s transaction-based state management provides clean integration points for either approach.',
+          'Each edit in Flash Editor is represented as a transaction containing a series of steps. These steps can be serialized, sent over the network, and applied on remote clients. The immutable state model ensures that applying remote changes is deterministic.',
+          'Version vectors, presence indicators, and cursor synchronization are additional layers that can be built on top of the base collaboration protocol. The extension system makes it possible to add these features without modifying the core.',
+        ]},
+      ];
+
+      const content = [];
+      for (const section of sections) {
+        content.push({
+          type: 'heading', attrs: { level: 2 },
+          content: [{ type: 'text', text: section.title }],
+        });
+        for (const text of section.paragraphs) {
+          content.push({
+            type: 'paragraph',
+            content: [{ type: 'text', text }],
+          });
+        }
+        content.push({ type: 'horizontal_rule' });
+      }
+
+      // Add a repeated section for extra bulk
+      for (let i = 1; i <= 10; i++) {
+        content.push({
+          type: 'heading', attrs: { level: 3 },
+          content: [{ type: 'text', text: `Section ${i}: Lorem Ipsum` }],
+        });
+        content.push({
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' }],
+        });
+        content.push({
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.' }],
+        });
+      }
+
+      return content;
+    }
+
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: StarterKit(),
+      content: {
+        type: 'doc',
+        content: generateLongContent(),
+      },
+      onUpdate: () => updateStats(),
+      onCreate: () => updateStats(),
+    });
+
+    function updateStats() {
+      const doc = editor.state.doc;
+      const text = doc.textContent || '';
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      let paragraphs = 0;
+      let nodes = 0;
+      doc.descendants((node) => {
+        nodes++;
+        if (node.type.name === 'paragraph') paragraphs++;
+      });
+      document.getElementById('stat-words').textContent = words.toLocaleString();
+      document.getElementById('stat-chars').textContent = chars.toLocaleString();
+      document.getElementById('stat-paragraphs').textContent = paragraphs;
+      document.getElementById('stat-nodes').textContent = nodes;
+    }
+  </script>
+</body>
+</html>

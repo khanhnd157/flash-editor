@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Formatting</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-alt: #f8f9fa; --text: #1a1a2e; --text-muted: #6c757d;
+      --accent: #4361ee; --border: #e2e8f0; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-alt); color: var(--text); padding: 32px 16px; }
+
+    .editor-wrap { max-width: 860px; margin: 0 auto; }
+    .editor-wrap > h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .editor-wrap > p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+    .editor-container {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+    }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
+      padding: 6px 10px; border-bottom: 1px solid var(--border); background: var(--bg);
+    }
+    .toolbar .sep { width: 1px; height: 24px; background: var(--border); margin: 0 6px; flex-shrink: 0; }
+    .toolbar button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 32px; height: 32px; padding: 0 8px;
+      border: none; border-radius: 6px; background: transparent;
+      cursor: pointer; font-size: 14px; color: var(--text-muted); transition: all 0.15s;
+    }
+    .toolbar button:hover { background: #f1f3f5; color: var(--text); }
+    .toolbar button.active { background: var(--accent); color: #fff; }
+    .toolbar button svg { width: 18px; height: 18px; }
+    .toolbar .label { font-size: 12px; color: var(--text-muted); padding: 0 6px; font-weight: 500; }
+
+    .flash-editor {
+      padding: 24px 32px; min-height: 400px; outline: none;
+      font-size: 16px; line-height: 1.75; color: var(--text);
+    }
+    .flash-editor p { margin-bottom: 0.75em; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+    .flash-editor u { text-decoration: underline; text-underline-offset: 3px; }
+    .flash-editor s { text-decoration: line-through; color: var(--text-muted); }
+    .flash-editor code { background: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: #e03131; }
+    .flash-editor mark { background: #fff3bf; padding: 1px 3px; border-radius: 2px; }
+    .flash-editor a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    .flash-editor h1 { font-size: 2em; font-weight: 700; margin: 1em 0 0.4em; }
+    .flash-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; }
+    .flash-editor h3 { font-size: 1.2em; font-weight: 600; margin: 0.6em 0 0.3em; }
+
+    .shortcut-table { margin-top: 24px; width: 100%; border-collapse: collapse; font-size: 14px; }
+    .shortcut-table th, .shortcut-table td { padding: 10px 16px; border: 1px solid var(--border); text-align: left; }
+    .shortcut-table th { background: var(--bg-alt); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); }
+    .shortcut-table kbd { background: #f1f3f5; border: 1px solid #ddd; border-radius: 4px; padding: 2px 6px; font-family: monospace; font-size: 12px; }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 8px; }
+      .flash-editor { padding: 16px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-wrap">
+    <h1>🎨 Formatting</h1>
+    <p>Explore all available text formatting options. Click the toolbar buttons or use keyboard shortcuts.</p>
+
+    <div class="editor-container">
+      <div class="toolbar" id="toolbar">
+        <span class="label">Marks</span>
+        <button id="btn-bold" title="Bold (Ctrl+B)"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 2.5C5.17157 2.5 4.5 3.17157 4.5 4V20C4.5 20.8284 5.17157 21.5 6 21.5H15C16.4587 21.5 17.8576 20.9205 18.8891 19.8891C19.9205 18.8576 20.5 17.4587 20.5 16C20.5 14.5413 19.9205 13.1424 18.8891 12.1109C18.6781 11.9 18.4518 11.7079 18.2128 11.5359C19.041 10.5492 19.5 9.29829 19.5 8C19.5 6.54131 18.9205 5.14236 17.8891 4.11091C16.8576 3.07946 15.4587 2.5 14 2.5H6ZM14 10.5C14.663 10.5 15.2989 10.2366 15.7678 9.76777C16.2366 9.29893 16.5 8.66304 16.5 8C16.5 7.33696 16.2366 6.70107 15.7678 6.23223C15.2989 5.76339 14.663 5.5 14 5.5H7.5V10.5H14ZM7.5 18.5V13.5H15C15.663 13.5 16.2989 13.7634 16.7678 14.2322C17.2366 14.7011 17.5 15.337 17.5 16C17.5 16.663 17.2366 17.2989 16.7678 17.7678C16.2989 18.2366 15.663 18.5 15 18.5H7.5Z"/></svg></button>
+        <button id="btn-italic" title="Italic (Ctrl+I)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.0222 3H19C19.5523 3 20 3.44772 20 4C20 4.55228 19.5523 5 19 5H15.693L10.443 19H14C14.5523 19 15 19.4477 15 20C15 20.5523 14.5523 21 14 21H9.02418C9.00802 21.0004 8.99181 21.0004 8.97557 21H5C4.44772 21 4 20.5523 4 20C4 19.4477 4.44772 19 5 19H8.30704L13.557 5H10C9.44772 5 9 4.55228 9 4C9 3.44772 9.44772 3 10 3H14.9782C14.9928 2.99968 15.0075 2.99967 15.0222 3Z"/></svg></button>
+        <button id="btn-underline" title="Underline (Ctrl+U)"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 4C7 3.44772 6.55228 3 6 3C5.44772 3 5 3.44772 5 4V10C5 11.8565 5.7375 13.637 7.05025 14.9497C8.36301 16.2625 10.1435 17 12 17C13.8565 17 15.637 16.2625 16.9497 14.9497C18.2625 13.637 19 11.8565 19 10V4C19 3.44772 18.5523 3 18 3C17.4477 3 17 3.44772 17 4V10C17 11.3261 16.4732 12.5979 15.5355 13.5355C14.5979 14.4732 13.3261 15 12 15C10.6739 15 9.40215 14.4732 8.46447 13.5355C7.52678 12.5979 7 11.3261 7 10V4ZM4 19C3.44772 19 3 19.4477 3 20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20C21 19.4477 20.5523 19 20 19H4Z"/></svg></button>
+        <button id="btn-strike" title="Strikethrough"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.00039 3H16.0001C16.5524 3 17.0001 3.44772 17.0001 4C17.0001 4.55229 16.5524 5 16.0001 5H9.00011C8.68006 4.99983 8.36412 5.07648 8.07983 5.22349C7.79555 5.37051 7.55069 5.5836 7.36585 5.84487C7.181 6.10614 7.06155 6.40796 7.01754 6.72497C6.97352 7.04198 7.00623 7.36492 7.11292 7.66667C7.29701 8.18737 7.02414 8.75872 6.50344 8.94281C5.98274 9.1269 5.4114 8.85403 5.2273 8.33333C5.01393 7.72984 4.94851 7.08396 5.03654 6.44994C5.12456 5.81592 5.36346 5.21229 5.73316 4.68974C6.10285 4.1672 6.59256 3.74101 7.16113 3.44698C7.72955 3.15303 8.36047 2.99975 9.00039 3Z"/><path d="M18 13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11H4C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H14C14.7956 13 15.5587 13.3161 16.1213 13.8787C16.6839 14.4413 17 15.2044 17 16C17 16.7956 16.6839 17.5587 16.1213 18.1213C15.5587 18.6839 14.7956 19 14 19H6C5.44772 19 5 19.4477 5 20C5 20.5523 5.44772 21 6 21H14C15.3261 21 16.5979 20.4732 17.5355 19.5355C18.4732 18.5979 19 17.3261 19 16C19 14.9119 18.6453 13.8604 18 13Z"/></svg></button>
+        <button id="btn-code" title="Inline Code (Ctrl+E)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.4545 4.2983C15.6192 3.77115 15.3254 3.21028 14.7983 3.04554C14.2712 2.88081 13.7103 3.1746 13.5455 3.70175L8.54554 19.7017C8.38081 20.2289 8.6746 20.7898 9.20175 20.9545C9.72889 21.1192 10.2898 20.8254 10.4545 20.2983L15.4545 4.2983Z"/><path d="M6.70711 7.29289C7.09763 7.68342 7.09763 8.31658 6.70711 8.70711L3.41421 12L6.70711 15.2929C7.09763 15.6834 7.09763 16.3166 6.70711 16.7071C6.31658 17.0976 5.68342 17.0976 5.29289 16.7071L1.29289 12.7071C0.902369 12.3166 0.902369 11.6834 1.29289 11.2929L5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289Z"/><path d="M17.2929 7.29289C17.6834 6.90237 18.3166 6.90237 18.7071 7.29289L22.7071 11.2929C23.0976 11.6834 23.0976 12.3166 22.7071 12.7071L18.7071 16.7071C18.3166 17.0976 17.6834 17.0976 17.2929 16.7071C16.9024 16.3166 16.9024 15.6834 17.2929 15.2929L20.5858 12L17.2929 8.70711C16.9024 8.31658 16.9024 7.68342 17.2929 7.29289Z"/></svg></button>
+        <button id="btn-highlight" title="Highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button>
+        <div class="sep"></div>
+        <span class="label">Links</span>
+        <button id="btn-link" title="Link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></button>
+        <button id="btn-unlink" title="Remove link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.84 12.25l1.72-1.71a5 5 0 00-7.07-7.07l-3 3a5 5 0 00.54 7.54"/><path d="M5.16 11.75l-1.72 1.71a5 5 0 007.07 7.07l3-3a5 5 0 00-.54-7.54"/><line x1="2" y1="2" x2="22" y2="22"/></svg></button>
+      </div>
+      <div id="editor"></div>
+    </div>
+
+    <table class="shortcut-table">
+      <thead>
+        <tr><th>Format</th><th>Shortcut</th><th>Markdown</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Bold</strong></td><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td><code>**text**</code></td></tr>
+        <tr><td><em>Italic</em></td><td><kbd>Ctrl</kbd>+<kbd>I</kbd></td><td><code>*text*</code></td></tr>
+        <tr><td><u>Underline</u></td><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>—</td></tr>
+        <tr><td><s>Strikethrough</s></td><td>—</td><td><code>~~text~~</code></td></tr>
+        <tr><td><code>Inline Code</code></td><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td><code>`text`</code></td></tr>
+        <tr><td><mark>Highlight</mark></td><td>—</td><td><code>==text==</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+    import { isMarkActive } from '@flash/commands';
+
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: StarterKit(),
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Text Formatting Playground' }] },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'This is ' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'bold' },
+            { type: 'text', text: ', this is ' },
+            { type: 'text', marks: [{ type: 'italic' }], text: 'italic' },
+            { type: 'text', text: ', and this is ' },
+            { type: 'text', marks: [{ type: 'bold' }, { type: 'italic' }], text: 'bold italic' },
+            { type: 'text', text: '.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'You can also use ' },
+            { type: 'text', marks: [{ type: 'underline' }], text: 'underline' },
+            { type: 'text', text: ', ' },
+            { type: 'text', marks: [{ type: 'strike' }], text: 'strikethrough' },
+            { type: 'text', text: ', ' },
+            { type: 'text', marks: [{ type: 'code' }], text: 'inline code' },
+            { type: 'text', text: ', and ' },
+            { type: 'text', marks: [{ type: 'highlight' }], text: 'highlighted text' },
+            { type: 'text', text: '.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Links are marks too: ' },
+            { type: 'text', marks: [{ type: 'link', attrs: { href: 'https://example.com' } }], text: 'click here' },
+            { type: 'text', text: '. You can combine marks freely: ' },
+            { type: 'text', marks: [{ type: 'bold' }, { type: 'highlight' }], text: 'bold + highlight' },
+            { type: 'text', text: '.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Select some text above and click a toolbar button to toggle formatting. Try combining multiple marks on the same selection!' },
+          ]},
+        ],
+      },
+      onUpdate: () => updateUI(),
+      onTransaction: () => updateUI(),
+      onCreate: () => updateUI(),
+    });
+
+    const marks = [
+      { id: 'btn-bold', cmd: 'toggleBold', mark: 'bold' },
+      { id: 'btn-italic', cmd: 'toggleItalic', mark: 'italic' },
+      { id: 'btn-underline', cmd: 'toggleUnderline', mark: 'underline' },
+      { id: 'btn-strike', cmd: 'toggleStrike', mark: 'strike' },
+      { id: 'btn-code', cmd: 'toggleCode', mark: 'code' },
+      { id: 'btn-highlight', cmd: 'toggleHighlight', mark: 'highlight' },
+    ];
+    for (const { id, cmd } of marks) {
+      document.getElementById(id).addEventListener('click', () => editor.command(cmd));
+    }
+
+    document.getElementById('btn-link').addEventListener('click', () => {
+      const href = prompt('Enter URL:', 'https://');
+      if (href) editor.command('toggleLink', { href });
+    });
+
+    document.getElementById('btn-unlink').addEventListener('click', () => {
+      editor.command('unsetLink');
+    });
+
+    function updateUI() {
+      const state = editor.state;
+      for (const { id, mark } of marks) {
+        const markType = state.schema.marks[mark];
+        const active = markType ? isMarkActive(state, markType) : false;
+        document.getElementById(id).classList.toggle('active', active);
+      }
+    }
+  </script>
+</body>
+</html>

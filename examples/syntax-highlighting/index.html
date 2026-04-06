@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Syntax Highlighting</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-alt: #f8f9fa; --text: #1a1a2e; --text-muted: #6c757d;
+      --accent: #4361ee; --border: #e2e8f0; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-alt); color: var(--text); padding: 32px 16px; }
+
+    .editor-wrap { max-width: 860px; margin: 0 auto; }
+    .editor-wrap > h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .editor-wrap > p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+
+    .editor-container {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+    }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--bg);
+    }
+    .toolbar button {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 32px; padding: 0 12px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--bg);
+      cursor: pointer; font-size: 13px; color: var(--text); transition: all 0.15s;
+    }
+    .toolbar button:hover { background: var(--bg-alt); border-color: var(--accent); color: var(--accent); }
+    .toolbar button svg { width: 18px; height: 18px; }
+    .toolbar .label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+    .flash-editor {
+      padding: 24px 32px; min-height: 500px; outline: none;
+      font-size: 16px; line-height: 1.75; color: var(--text);
+    }
+    .flash-editor p { margin-bottom: 0.75em; }
+    .flash-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; }
+    .flash-editor h3 { font-size: 1.2em; font-weight: 600; margin: 0.6em 0 0.3em; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+    .flash-editor code { background: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: #e03131; }
+    .flash-editor pre {
+      background: #1e1e2e; color: #cdd6f4; padding: 16px 20px; border-radius: 8px;
+      overflow-x: auto; margin: 0.75em 0; font-size: 14px; line-height: 1.6;
+      position: relative;
+    }
+    .flash-editor pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .flash-editor hr { border: none; border-top: 2px solid var(--border); margin: 1.5em 0; }
+
+    /* Syntax highlighting tokens (Catppuccin Mocha) */
+    .flash-editor pre .token-keyword { color: #cba6f7; }
+    .flash-editor pre .token-string { color: #a6e3a1; }
+    .flash-editor pre .token-number { color: #fab387; }
+    .flash-editor pre .token-comment { color: #6c7086; font-style: italic; }
+    .flash-editor pre .token-function { color: #89b4fa; }
+    .flash-editor pre .token-variable { color: #f5c2e7; }
+    .flash-editor pre .token-operator { color: #89dceb; }
+    .flash-editor pre .token-type { color: #f9e2af; }
+    .flash-editor pre .token-punctuation { color: #9399b2; }
+    .flash-editor pre .token-tag { color: #f38ba8; }
+    .flash-editor pre .token-attribute { color: #fab387; }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 8px; }
+      .flash-editor { padding: 16px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-wrap">
+    <h1>🌈 Syntax Highlighting</h1>
+    <p>Code blocks with language-based syntax highlighting. Type <code>```</code> followed by a space to create a code block, or use the toolbar.</p>
+
+    <div class="editor-container">
+      <div class="toolbar">
+        <span class="label">Insert code block:</span>
+        <button id="btn-code-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Code Block</button>
+        <button id="btn-paragraph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 4H9.5a4.5 4.5 0 000 9H13"/></svg> Back to Paragraph</button>
+      </div>
+      <div id="editor"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: StarterKit(),
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Code Block Examples' }] },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Flash Editor supports code blocks with syntax highlighting. Here are examples in different languages:' },
+          ]},
+          { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'JavaScript' }] },
+          { type: 'code_block', content: [
+            { type: 'text', text: 'function fibonacci(n) {\n  if (n <= 1) return n;\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n\nconst result = fibonacci(10);\nconsole.log(`Fibonacci(10) = ${result}`);' },
+          ]},
+          { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'TypeScript' }] },
+          { type: 'code_block', content: [
+            { type: 'text', text: 'interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nasync function fetchUser(id: number): Promise<User> {\n  const response = await fetch(`/api/users/${id}`);\n  return response.json();\n}' },
+          ]},
+          { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'Python' }] },
+          { type: 'code_block', content: [
+            { type: 'text', text: 'class BinaryTree:\n    def __init__(self, value):\n        self.value = value\n        self.left = None\n        self.right = None\n\n    def insert(self, value):\n        if value < self.value:\n            if self.left is None:\n                self.left = BinaryTree(value)\n            else:\n                self.left.insert(value)\n        else:\n            if self.right is None:\n                self.right = BinaryTree(value)\n            else:\n                self.right.insert(value)' },
+          ]},
+          { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'HTML' }] },
+          { type: 'code_block', content: [
+            { type: 'text', text: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <title>Hello World</title>\n</head>\n<body>\n  <h1>Hello, World!</h1>\n  <p>Welcome to Flash Editor.</p>\n</body>\n</html>' },
+          ]},
+          { type: 'horizontal_rule' },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Try editing the code blocks above or create a new one using the toolbar. You can also type ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '```' },
+            { type: 'text', text: ' at the start of a line and press Space to create a code block.' },
+          ]},
+        ],
+      },
+    });
+
+    document.getElementById('btn-code-block').addEventListener('click', () => {
+      editor.command('setCodeBlock');
+    });
+
+    document.getElementById('btn-paragraph').addEventListener('click', () => {
+      editor.command('setParagraph');
+    });
+  </script>
+</body>
+</html>

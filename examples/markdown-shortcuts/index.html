@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Markdown Shortcuts</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-alt: #f8f9fa; --text: #1a1a2e; --text-muted: #6c757d;
+      --accent: #4361ee; --border: #e2e8f0; --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-alt); color: var(--text); padding: 32px 16px; }
+
+    .editor-wrap { max-width: 860px; margin: 0 auto; }
+    .editor-wrap > h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .editor-wrap > p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+
+    .editor-container {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;
+    }
+
+    .flash-editor {
+      padding: 24px 32px; min-height: 400px; outline: none;
+      font-size: 16px; line-height: 1.75; color: var(--text);
+    }
+    .flash-editor p { margin-bottom: 0.75em; }
+    .flash-editor h1 { font-size: 2em; font-weight: 700; margin: 1em 0 0.4em; }
+    .flash-editor h2 { font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; }
+    .flash-editor h3 { font-size: 1.2em; font-weight: 600; margin: 0.6em 0 0.3em; }
+    .flash-editor strong { font-weight: 700; }
+    .flash-editor em { font-style: italic; }
+    .flash-editor code { background: #f1f3f5; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: #e03131; }
+    .flash-editor pre { background: #1e1e2e; color: #cdd6f4; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 0.75em 0; font-size: 14px; line-height: 1.6; }
+    .flash-editor pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .flash-editor blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; margin: 0.75em 0; color: var(--text-muted); font-style: italic; }
+    .flash-editor hr { border: none; border-top: 2px solid var(--border); margin: 1.5em 0; }
+    .flash-editor ul, .flash-editor ol { padding-left: 28px; margin: 0.5em 0; }
+    .flash-editor li { margin-bottom: 4px; }
+    .flash-editor li p { margin-bottom: 2px; }
+    .flash-editor mark { background: #fff3bf; padding: 1px 3px; border-radius: 2px; }
+
+    .shortcuts-guide {
+      margin-top: 24px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .shortcuts-guide h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .shortcut-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .shortcut-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      background: var(--bg-alt); border-radius: 6px; font-size: 14px;
+    }
+    .shortcut-item code {
+      background: #1e1e2e; color: #cdd6f4; padding: 3px 8px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; white-space: nowrap;
+    }
+    .shortcut-item span { color: var(--text-muted); }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 8px; }
+      .flash-editor { padding: 16px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-wrap">
+    <h1>⌨️ Markdown Shortcuts</h1>
+    <p>Start a new line and type Markdown syntax — it converts to rich text instantly. Try typing the shortcuts below on an empty line.</p>
+
+    <div class="editor-container">
+      <div id="editor"></div>
+    </div>
+
+    <div class="shortcuts-guide">
+      <h3>Available Shortcuts</h3>
+      <div class="shortcut-grid">
+        <div class="shortcut-item"><code># </code><span>Heading 1</span></div>
+        <div class="shortcut-item"><code>## </code><span>Heading 2</span></div>
+        <div class="shortcut-item"><code>### </code><span>Heading 3</span></div>
+        <div class="shortcut-item"><code>> </code><span>Blockquote</span></div>
+        <div class="shortcut-item"><code>- </code><span>Bullet list</span></div>
+        <div class="shortcut-item"><code>* </code><span>Bullet list</span></div>
+        <div class="shortcut-item"><code>1. </code><span>Ordered list</span></div>
+        <div class="shortcut-item"><code>``` </code><span>Code block</span></div>
+        <div class="shortcut-item"><code>--- </code><span>Horizontal rule</span></div>
+        <div class="shortcut-item"><code>**text**</code><span>Bold</span></div>
+        <div class="shortcut-item"><code>*text*</code><span>Italic</span></div>
+        <div class="shortcut-item"><code>`text`</code><span>Inline code</span></div>
+        <div class="shortcut-item"><code>~~text~~</code><span>Strikethrough</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '@flash/core';
+    import { StarterKit } from '@flash/starter-kit';
+
+    const editor = new Editor({
+      element: document.getElementById('editor'),
+      extensions: StarterKit(),
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Try Markdown Shortcuts' }] },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Type ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '# ' },
+            { type: 'text', text: ' at the start of a line to create a heading. Type ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '> ' },
+            { type: 'text', text: ' for a blockquote.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Lists work too: start a line with ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '- ' },
+            { type: 'text', text: ' or ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '1. ' },
+            { type: 'text', text: ' to create bullet or numbered lists.' },
+          ]},
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'For code blocks, type three backticks ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '```' },
+            { type: 'text', text: ' and press Space. For a horizontal rule, type ' },
+            { type: 'text', marks: [{ type: 'code' }], text: '---' },
+            { type: 'text', text: '.' },
+          ]},
+          { type: 'horizontal_rule' },
+          { type: 'paragraph', content: [
+            { type: 'text', text: 'Start typing below this line to try it out! ↓' },
+          ]},
+          { type: 'paragraph', content: [{ type: 'text', text: '' }] },
+        ],
+      },
+    });
+  </script>
+</body>
+</html>

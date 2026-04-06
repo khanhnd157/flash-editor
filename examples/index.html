@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Editor — Examples</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text: #1a1a2e;
+      --text-muted: #6c757d;
+      --accent: #4361ee;
+      --accent-light: #e8edff;
+      --border: #e9ecef;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif; background: var(--bg-secondary); color: var(--text); min-height: 100vh; }
+
+    .header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 24px 0; }
+    .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .header h1 { font-size: 32px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+    .header h1 span { font-size: 36px; }
+    .header p { margin-top: 8px; color: var(--text-muted); font-size: 16px; max-width: 600px; line-height: 1.5; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+
+    .section-title { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 16px; padding-left: 4px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 40px; }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow);
+    }
+    .card:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1); transform: translateY(-2px); }
+    .card-icon { font-size: 28px; margin-bottom: 4px; }
+    .card h3 { font-size: 17px; font-weight: 600; }
+    .card p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+    .card .tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 4px; background: var(--accent-light); color: var(--accent); margin-top: 4px; }
+
+    footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); background: var(--bg); }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <h1><span>⚡</span> Flash Editor Examples</h1>
+      <p>Explore a wide range of examples showing how to use Flash Editor. From basic setups to advanced features.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">Basics</div>
+    <div class="grid">
+      <a class="card" href="default-editor/index.html">
+        <div class="card-icon">📝</div>
+        <h3>Default Text Editor</h3>
+        <p>A complete rich-text editor with toolbar, formatting, and all the essentials out of the box.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="minimal/index.html">
+        <div class="card-icon">✨</div>
+        <h3>Minimal Setup</h3>
+        <p>The simplest possible editor — just a few lines of code to get started.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="formatting/index.html">
+        <div class="card-icon">🎨</div>
+        <h3>Formatting</h3>
+        <p>Explore text formatting: bold, italic, underline, strikethrough, highlight, code, and more.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="markdown-shortcuts/index.html">
+        <div class="card-icon">⌨️</div>
+        <h3>Markdown Shortcuts</h3>
+        <p>Type Markdown syntax and watch it transform into rich text in real-time.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="images/index.html">
+        <div class="card-icon">🖼️</div>
+        <h3>Images</h3>
+        <p>Add images via URL, resize them, and see inline image handling in action.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="long-texts/index.html">
+        <div class="card-icon">📄</div>
+        <h3>Long Texts</h3>
+        <p>Stress-test the editor with a large document. Measures rendering and typing performance.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="text-direction/index.html">
+        <div class="card-icon">🔄</div>
+        <h3>Text Direction &amp; RTL</h3>
+        <p>Support for right-to-left languages like Arabic and Hebrew with bidirectional text.</p>
+        <span class="tag">Editor</span>
+      </a>
+    </div>
+
+    <div class="section-title">Advanced</div>
+    <div class="grid">
+      <a class="card" href="menus/index.html">
+        <div class="card-icon">💬</div>
+        <h3>Bubble &amp; Floating Menus</h3>
+        <p>Contextual menus that appear on text selection or on empty lines.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="syntax-highlighting/index.html">
+        <div class="card-icon">🌈</div>
+        <h3>Syntax Highlighting</h3>
+        <p>Code blocks with language-based syntax highlighting using a lightweight approach.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="forced-content/index.html">
+        <div class="card-icon">📐</div>
+        <h3>Forced Content Structure</h3>
+        <p>Enforce a specific document structure with required heading and body sections.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="../custom-extension/index.html">
+        <div class="card-icon">🧩</div>
+        <h3>Custom Extensions</h3>
+        <p>Build your own Callout block and Emoji inline node from scratch.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="../programmatic/index.html">
+        <div class="card-icon">🔧</div>
+        <h3>Programmatic API</h3>
+        <p>Run commands, inspect state, dry-run checks, and chain operations via the API.</p>
+        <span class="tag">Editor</span>
+      </a>
+
+      <a class="card" href="../i18n/index.html">
+        <div class="card-icon">🌐</div>
+        <h3>Multilingual (i18n)</h3>
+        <p>Switch between English, Vietnamese, and Chinese with dynamic toolbar labels.</p>
+        <span class="tag">Editor</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    Built with <a href="https://github.com/khanhnd157/flash-editor">Flash Editor</a> — A lightweight, fast, headless rich-text editor engine.
+  </footer>
+</body>
+</html>
