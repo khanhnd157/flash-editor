@@ -7,6 +7,8 @@ import { renderDoc, ViewDescSet } from './node-view';
 import { DecorationSet } from './decoration';
 import type { DecorationSource, Decoration } from './decoration';
 import { InputHandler } from './input';
+import { DirtyTracker, LazyRenderer } from './lazy-render';
+import type { LazyRenderConfig } from './lazy-render';
 
 export interface EditorViewConfig {
   state: EditorState;
@@ -15,6 +17,10 @@ export interface EditorViewConfig {
   nodeViews?: Record<string, import('./node-view').CustomNodeView>;
   editable?: boolean;
   attributes?: Record<string, string>;
+  /** Accessibility label for the editor. */
+  ariaLabel?: string;
+  /** Lazy rendering config for long documents. */
+  lazyRender?: LazyRenderConfig;
 }
 
 export class EditorView {
@@ -29,20 +35,39 @@ export class EditorView {
   private _composing = false;
   private _editable: boolean;
   private _updating = false;
+  private _dirtyTracker = new DirtyTracker();
+  private _lazyRenderer: LazyRenderer;
+  private _ariaLive: HTMLElement | null = null;
 
   constructor(place: HTMLElement, config: EditorViewConfig) {
     this._config = config;
     this._state = config.state;
     this._editable = config.editable ?? true;
+    this._lazyRenderer = new LazyRenderer(config.lazyRender);
 
     // Create editor root
     this.dom = document.createElement('div');
     this.dom.classList.add('flash-editor');
+
+    // Accessibility attributes
     this.dom.setAttribute('role', 'textbox');
     this.dom.setAttribute('aria-multiline', 'true');
+    this.dom.setAttribute('aria-label', config.ariaLabel ?? 'Rich text editor');
+    this.dom.setAttribute('tabindex', '0');
     if (this._editable) {
       this.dom.contentEditable = 'true';
+      this.dom.setAttribute('aria-readonly', 'false');
+    } else {
+      this.dom.setAttribute('aria-readonly', 'true');
     }
+
+    // Create aria-live region for screen reader announcements
+    this._ariaLive = document.createElement('div');
+    this._ariaLive.setAttribute('role', 'log');
+    this._ariaLive.setAttribute('aria-live', 'polite');
+    this._ariaLive.setAttribute('aria-atomic', 'false');
+    this._ariaLive.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;padding:0;margin:-1px';
+    place.appendChild(this._ariaLive);
 
     // Apply custom attributes
     if (config.attributes) {
@@ -72,6 +97,9 @@ export class EditorView {
 
     // Initial render
     this._render();
+
+    // Attach lazy renderer for long documents
+    this._lazyRenderer.attach(this.dom);
   }
 
   get state(): EditorState {
@@ -93,7 +121,7 @@ export class EditorView {
   /**
    * Update the view with a new state.
    */
-  updateState(state: EditorState): void {
+  updateState(state: EditorState, tr?: Transaction): void {
     const prevState = this._state;
     this._state = state;
 
@@ -102,9 +130,16 @@ export class EditorView {
       this._decorations = this._config.decorations(state);
     }
 
+    // Track dirty ranges from the transaction for incremental re-render
+    if (tr && tr.steps.length > 0) {
+      this._dirtyTracker.track(tr);
+    }
+
     // Re-render if doc changed
     if (state.doc !== prevState.doc) {
       this._render();
+      this._dirtyTracker.clear();
+      this._lazyRenderer.onUpdate();
     }
 
     // Sync selection to DOM
@@ -120,7 +155,7 @@ export class EditorView {
     if (this._config.dispatchTransaction) {
       this._config.dispatchTransaction(tr);
     } else {
-      this.updateState(this._state.apply(tr));
+      this.updateState(this._state.apply(tr), tr);
     }
   }
 
@@ -139,11 +174,22 @@ export class EditorView {
   }
 
   /**
+   * Announce a message to screen readers via the aria-live region.
+   */
+  announce(message: string): void {
+    if (this._ariaLive) {
+      this._ariaLive.textContent = message;
+    }
+  }
+
+  /**
    * Destroy the editor view.
    */
   destroy(): void {
     this._inputHandler.destroy();
     this._observer?.disconnect();
+    this._lazyRenderer.detach();
+    this._ariaLive?.remove();
     this.dom.remove();
   }
 

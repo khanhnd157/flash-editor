@@ -22,3 +22,7 @@ export { InputHandler } from './input';
 
 // History
 export { history, undo, redo, undoDepth, redoDepth } from './history';
+
+// Performance
+export { LazyRenderer, DirtyTracker, VNodePool } from './lazy-render';
+export type { LazyRenderConfig } from './lazy-render';
